@@ -9,7 +9,7 @@ import numpy as np
 
 def main():
     # TODO: put your code here
-    pass
+    print("test")
 
 
 #############################
