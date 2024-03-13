@@ -1,6 +1,6 @@
 import math
 
-from traffic.core.geodesy import bearing, distance, destination
+from pitot.geodesy import bearing, distance, destination
 from traffic.data import samples
 from numpy.random import default_rng
 import pyproj
