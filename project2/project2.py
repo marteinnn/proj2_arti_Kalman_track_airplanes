@@ -5,6 +5,7 @@ from src.kalmanfilter import create_kalman_filter
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+from rich.console import Console
 
 # Suppress future warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -32,6 +33,15 @@ def main():
 
         # Select the first flight from the ground truth data
         flight_id, original_flight = list(ground_truth_data.items())[0]
+
+        print(original_flight)
+
+        # Print the flight with rich representation
+        console = Console()
+        console.print(original_flight)
+
+        # Print the first 30 minutes of the flight
+        print(original_flight.first(minutes=30))
 
         # Get the simulated radar data for the selected flight
         radar_flights = get_radar_data(ground_truth_data)
