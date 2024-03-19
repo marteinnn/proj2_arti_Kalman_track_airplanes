@@ -7,6 +7,9 @@ import numpy as np
 from traffic.data.samples import belevingsvlucht
 from rich.console import Console
 import matplotlib.pyplot as plt
+import random
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 def main():
     # Create Kalman filter
@@ -25,19 +28,25 @@ def main():
 
     print("Estimated state:", kf.x)
 
-    # Print the sample flight
-    print(belevingsvlucht)
+    # Get the ground truth data
+    ground_truth_data = get_ground_truth_data()
+
+    # Select a random flight
+    flight_id, flight = random.choice(list(ground_truth_data.items()))
+
+    print(f"Flight ID: {flight_id}")
+    print(flight)
 
     # Print the flight with rich representation
     console = Console()
-    console.print(belevingsvlucht)
+    console.print(flight)
 
     # Print the first 30 minutes of the flight
-    print(belevingsvlucht.first(minutes=30))
+    print(flight.first(minutes=30))
 
     # Plot the flight
     fig, ax = plt.subplots()
-    belevingsvlucht.plot(ax)
+    flight.plot(ax)
 
     plt.show()  # Display the plot
 
