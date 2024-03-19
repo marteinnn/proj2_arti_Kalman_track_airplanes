@@ -32,9 +32,9 @@ def main():
     ground_truth_data = get_ground_truth_data()
 
     # Select a random flight
-    flight_id, original_flight = random.choice(list(ground_truth_data.items()))
+    flight_id, original_flight = list(ground_truth_data.items())[0]
 
-    print(f"Flight ID: {flight_id}")
+    #print(f"Flight ID: {flight_id}")
     print(original_flight)
 
     # Print the flight with rich representation

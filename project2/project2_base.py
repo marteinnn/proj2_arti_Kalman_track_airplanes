@@ -31,7 +31,7 @@ def get_ground_truth_data():
         if not flight:
             print("name %s does not work" % x)
         flight = flight.assign(flight_id=f"{flight.callsign}_{i:03}")
-        print("reading data of flight: %s" % flight.flight_id)
+        # print("reading data of flight: %s" % flight.flight_id)
         projection = pyproj.Proj(proj="lcc", ellps="WGS84",
                                  lat_1=flight.data.latitude.min(), lat_2=flight.data.latitude.max(),
                                  lon_1=flight.data.longitude.min(), lon_2=flight.data.longitude.max(),
@@ -40,7 +40,7 @@ def get_ground_truth_data():
             print("ERROR: duplicate flight ids: %s" % flight.flight_id)
         flights[flight.flight_id] = flight
         projection_for_flight[flight.flight_id] = projection
-        print("reading data of flight: %s" % flight.flight_id)
+        # print("reading data of flight: %s" % flight.flight_id)
         i += 1
     return flights
 
@@ -77,7 +77,7 @@ def get_radar_data_for_flight(flight):
     radar_lat = rng.uniform(flight.data.latitude.min(), flight.data.latitude.max())
     radar_lon = rng.uniform(flight.data.longitude.min(), flight.data.longitude.max())
     # TODO: store radar position for the flight and put it into the plot for reference
-    print("flight: %s" % flight.flight_id)
+    #print("flight: %s" % flight.flight_id)
     flight_radar = flight.resample("10s")
     radar_position[flight.flight_id] = (radar_lat, radar_lon)
     # flight_radar.__setattr__("radar_position", (radar_lat, radar_lon))
