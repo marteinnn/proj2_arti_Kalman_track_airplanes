@@ -40,9 +40,6 @@ def main():
         console = Console()
         console.print(original_flight)
 
-        # Print the first 30 minutes of the flight
-        print(original_flight.first(minutes=30))
-
         # Get the simulated radar data for the selected flight
         radar_flights = get_radar_data(ground_truth_data)
         radar_flight = radar_flights[flight_id]
