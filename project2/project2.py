@@ -32,22 +32,28 @@ def main():
     ground_truth_data = get_ground_truth_data()
 
     # Select a random flight
-    flight_id, flight = random.choice(list(ground_truth_data.items()))
+    flight_id, original_flight = random.choice(list(ground_truth_data.items()))
 
     print(f"Flight ID: {flight_id}")
-    print(flight)
+    print(original_flight)
 
     # Print the flight with rich representation
     console = Console()
-    console.print(flight)
+    console.print(original_flight)
 
     # Print the first 30 minutes of the flight
-    print(flight.first(minutes=30))
+    print(original_flight.first(minutes=30))
 
-    # Plot the flight
+    # Get the simulated radar data for the flight
+    radar_flights = get_radar_data(ground_truth_data)
+    radar_flight = radar_flights[flight_id]
+
+    # Plot the original flight data and the simulated radar data
     fig, ax = plt.subplots()
-    flight.plot(ax)
+    original_flight.plot(ax, label='Original')
+    radar_flight.plot(ax, label='Radar')
 
+    plt.legend()
     plt.show()  # Display the plot
 
 if __name__ == "__main__":
