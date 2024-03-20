@@ -1,42 +1,37 @@
-#!/usr/bin/env python
-
 from project2_base import *
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 from rich.console import Console
 from src.kalmanfilter import create_kalman_filter, run_kalman_filter_on_flight
-from src.error_utils import compute_position_error
+from src.error_utils import get_filtered_error_measure
+import pandas as pd
 
 # Suppress future warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
-
 
 def main():
     try:
         # Create Kalman filter
         kf = create_kalman_filter(dt=1, sigma_p=1.5, sigma_o=10)
 
-        # Simulate some data
+        # Simulate data
         true_state = np.array([0, 1, 0, 1])  # [x, vx, y, vy]
         measurement_noise = np.random.normal(0, 10, 2)  # [x, y]
         measurement = kf.H @ true_state + measurement_noise
 
-        # Predict next state
         kf.predict()
 
-        # Update state with measurement
+        # Update state
         kf.update(measurement)
 
         print("Estimated state:", kf.x)
 
         
-        # Get the ground truth data
+        # Get the ground truth data and the simulated radar data for the flight
         ground_truth_flights = get_ground_truth_data()
-
-        # Get the simulated radar data for the flight
         radar_data = get_radar_data(ground_truth_flights)
-        flight_id, radar_flight = list(radar_data.items())[0]
+        flight_id, radar_flight = list(radar_data.items())[1]
 
         # Run Kalman Filter on the flight data
         filtered_state_means, _ = run_kalman_filter_on_flight(radar_flight)
@@ -51,31 +46,28 @@ def main():
         # Get original flight data
         original_flight = ground_truth_flights[flight_id]
 
-        print(original_flight)
+        # Set datetime index
+        radar_flight.data.index = pd.to_datetime(radar_flight.data.index)
+        original_flight.data.index = pd.to_datetime(original_flight.data.index)
+
+        # Measure error of the filtered positions
+        max_distance, mean_distance = get_filtered_error_measure(radar_flight.data, original_flight.data)
+        print(f"Maximal distance: {max_distance} meters")
+        print(f"Mean distance: {mean_distance} meters")
 
         # Print the flight with rich representation
         console = Console()
         console.print(original_flight)
-
 
         # Plot the results
         fig, ax = plt.subplots()
         original_flight.plot(ax, label='Original Flight')
         radar_flight.plot(ax, label='Filtered Flight')
         plt.legend()
-
-        # Calculate errors
-        original_positions = list(zip(original_flight.data.latitude, original_flight.data.longitude))
-        errors = compute_position_error(filtered_state_means, original_positions)
-        mean_error = sum(errors) / len(errors)
-        max_error = max(errors)
-        print(f"Mean error: {mean_error} meters")
-        print(f"Maximal error: {max_error} meters")
-
         plt.show()
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred: {repr(e)}")
 
 if __name__ == "__main__":
     main()
