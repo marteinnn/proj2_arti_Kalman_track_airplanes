@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import warnings
 from rich.console import Console
 from src.kalmanfilter import create_kalman_filter, run_kalman_filter_on_flight
-from src.error_utils import get_filtered_error_measure
 import pandas as pd
 
 # Suppress future warnings
@@ -50,10 +49,10 @@ def main():
         radar_flight.data.index = pd.to_datetime(radar_flight.data.index)
         original_flight.data.index = pd.to_datetime(original_flight.data.index)
 
-        # Measure error of the filtered positions
-        max_distance, mean_distance = get_filtered_error_measure(radar_flight.data, original_flight.data)
-        print(f"Maximal distance: {max_distance} meters")
-        print(f"Mean distance: {mean_distance} meters")
+        ## Measure error of the filtered positions
+        #max_distance, mean_distance = get_filtered_error_measure(radar_flight.data, original_flight.data)
+        #print(f"Maximal distance: {max_distance} meters")
+        #print(f"Mean distance: {mean_distance} meters")
 
         # Print the flight with rich representation
         console = Console()

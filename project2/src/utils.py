@@ -1,7 +1,8 @@
 from geopy.distance import geodesic
 import statistics  # for mean calculation
 import numpy as np
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 
@@ -43,3 +44,20 @@ def get_filtered_error_measure(filtered_data, unfiltered_data):
 
     return max(distances), np.mean(distances)
 
+
+def plot_heatmap(data, title):
+    # Convert the dictionary to a 2D array
+    sigma_o_values = sorted(set(k[0] for k in data.keys()))
+    sigma_p_values = sorted(set(k[1] for k in data.keys()))
+    heatmap_data = np.zeros((len(sigma_o_values), len(sigma_p_values)))
+    for i, sigma_o in enumerate(sigma_o_values):
+        for j, sigma_p in enumerate(sigma_p_values):
+            heatmap_data[i, j] = data[(sigma_o, sigma_p)]
+
+    # Create the heatmap
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(heatmap_data, annot=True, fmt=".2f", xticklabels=sigma_p_values, yticklabels=sigma_o_values)
+    plt.title(title)
+    plt.xlabel('sigma_p')
+    plt.ylabel('sigma_o')
+    plt.show()
