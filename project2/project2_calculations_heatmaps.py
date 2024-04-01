@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 import warnings
 from rich.console import Console
 from src.kalmanfilter import create_kalman_filter, run_kalman_filter_on_flight
-from project2.src.utils import get_filtered_error_measure, plot_heatmap
+from src.utils import get_filtered_error_measure, plot_heatmap
+from src.smoothing import run_kalman_smoother_on_flight
 import pandas as pd
 from src.kalmanfilter import *
 import time
@@ -34,7 +35,7 @@ def main():
                     kf = create_kalman_filter(dt=1, sigma_p=sigma_p, sigma_o=sigma_o)
 
                     # Apply filtering to the flight data
-                    filtered_state_means, _ = run_kalman_filter_on_flight(flight)
+                    filtered_state_means, _ = run_kalman_smoother_on_flight(flight)
 
                     # Update flight data with filtered positions
                     flight.data.x = filtered_state_means[:, 0]
