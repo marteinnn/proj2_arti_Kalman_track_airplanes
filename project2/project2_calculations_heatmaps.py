@@ -1,8 +1,6 @@
 from project2_base import *
 import numpy as np
-import matplotlib.pyplot as plt
 import warnings
-from rich.console import Console
 from src.kalmanfilter import create_kalman_filter, run_kalman_filter_on_flight
 from src.utils import get_filtered_error_measure, plot_heatmap
 from src.smoothing import run_kalman_smoother_on_flight
@@ -20,22 +18,22 @@ def main():
         ground_truth_flights = get_ground_truth_data()
         radar_data = get_radar_data(ground_truth_flights)
 
-        # Define some_n_flights
-        some_n_flights = list(radar_data.values())[:2]  # Replace with your actual flight data
+        some_n_flights = list(radar_data.values())[:5]  # First 5 flights
 
         mean_errors = {}
         max_errors = {}
 
         for flight in some_n_flights:
             print(f"Processing flight {flight.flight_id}...")
-            for sigma_o in [60, 70, 80, 90, 100, 110, 120, 130, 140]:
+            for sigma_o in [60, 70, 80, 90, 100, 110, 120, 130, 140]: 
                 for sigma_p in [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]:
                     print(f"Running experiment with sigma_o={sigma_o}, sigma_p={sigma_p}...")
                     # Create Kalman filter
                     kf = create_kalman_filter(dt=1, sigma_p=sigma_p, sigma_o=sigma_o)
 
-                    # Apply filtering to the flight data
-                    filtered_state_means, _ = run_kalman_smoother_on_flight(flight)
+                    # Apply filtering to the flight data. To use smoother, uncomment the line below and comment the line below it
+                    #filtered_state_means, _ = run_kalman_smoother_on_flight(flight)
+                    filtered_state_means, _ = run_kalman_filter_on_flight(flight)
 
                     # Update flight data with filtered positions
                     flight.data.x = filtered_state_means[:, 0]

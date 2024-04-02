@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import warnings
 from rich.console import Console
 from src.kalmanfilter import create_kalman_filter, run_kalman_filter_on_flight
+from src.utils import get_filtered_error_measure
 import pandas as pd
 
 # Suppress future warnings
@@ -30,40 +31,42 @@ def main():
         # Get the ground truth data and the simulated radar data for the flight
         ground_truth_flights = get_ground_truth_data()
         radar_data = get_radar_data(ground_truth_flights)
-        flight_id, radar_flight = list(radar_data.items())[1]
+        first_five_flights = list(radar_data.items())[:5] # First 5 flights
 
-        # Run Kalman Filter on the flight data
-        filtered_state_means, _ = run_kalman_filter_on_flight(radar_flight)
 
-        # Update flight data with filtered positions
-        radar_flight.data.x = filtered_state_means[:, 0]
-        radar_flight.data.y = filtered_state_means[:, 2]
+        for flight_id, radar_flight in first_five_flights:
+            # Run Kalman Filter on the flight data
+            filtered_state_means, _ = run_kalman_filter_on_flight(radar_flight)
 
-        # Convert Cartesian coordinates to latitude/longitude
-        radar_flight = set_lat_lon_from_x_y(radar_flight)
+            # Update flight data with filtered positions
+            radar_flight.data.x = filtered_state_means[:, 0]
+            radar_flight.data.y = filtered_state_means[:, 2]
 
-        # Get original flight data
-        original_flight = ground_truth_flights[flight_id]
+            # Convert Cartesian coordinates to latitude/longitude
+            radar_flight = set_lat_lon_from_x_y(radar_flight)
 
-        # Set datetime index
-        radar_flight.data.index = pd.to_datetime(radar_flight.data.index)
-        original_flight.data.index = pd.to_datetime(original_flight.data.index)
+            # Get original flight data
+            original_flight = ground_truth_flights[flight_id]
 
-        ## Measure error of the filtered positions
-        #max_distance, mean_distance = get_filtered_error_measure(radar_flight.data, original_flight.data)
-        #print(f"Maximal distance: {max_distance} meters")
-        #print(f"Mean distance: {mean_distance} meters")
+            # Set datetime index
+            radar_flight.data.index = pd.to_datetime(radar_flight.data.index)
+            original_flight.data.index = pd.to_datetime(original_flight.data.index)
 
-        # Print the flight with rich representation
-        console = Console()
-        console.print(original_flight)
+            # Measure error of the filtered positions
+            max_distance, mean_distance = get_filtered_error_measure(radar_flight.data, original_flight.data)
+            print(f"Maximal distance: {max_distance} meters")
+            print(f"Mean distance: {mean_distance} meters")
 
-        # Plot the results
-        fig, ax = plt.subplots()
-        original_flight.plot(ax, label='Original Flight')
-        radar_flight.plot(ax, label='Filtered Flight')
-        plt.legend()
-        plt.show()
+            # Print the flight with rich representation
+            console = Console()
+            console.print(original_flight)
+
+            # Plot the results
+            fig, ax = plt.subplots()
+            original_flight.plot(ax, label='Original Flight')
+            radar_flight.plot(ax, label='Filtered Flight')
+            plt.legend()
+            plt.show()
 
     except Exception as e:
         print(f"An error occurred: {repr(e)}")
